@@ -1,0 +1,28 @@
+{
+    "name": "nadneb\/smooth",
+    "description": "Smoothing out differences between migration files and databases.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "nadneb",
+            "email": "1997nadneb@gmail.com"
+        }
+    ],
+    "require": {
+        "nikic/php-parser": "^4.4",
+        "mathieuviossat/arraytotexttable": "^1.0",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nadneb\\Smooth\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nadneb\\Smooth\\Providers\\SmoothProvider"
+            ]
+        }
+    }
+}
