@@ -20,7 +20,7 @@ class MysqlGrammar extends \Illuminate\Database\Schema\Grammars\MySqlGrammar
      * @param  \Illuminate\Support\Fluent  $column
      * @return string
      */
-    protected function getType(Fluent $column)
+    public function getType(Fluent $column)
     {
         return $this->{'type'.ucfirst($column->type)}($column);
     }
