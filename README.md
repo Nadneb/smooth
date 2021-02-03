@@ -6,12 +6,14 @@
 ## Installing
 
 ```shell
-$ composer require nadneb/smooth -vvv
+composer require nadneb/smooth -vvv
 ```
 
 ## Usage
 
-TODO
+```shell
+php artisan vendor:publish --provider="Nadneb\Smooth\Providers\SmoothProvider"
+```
 
 ## Contributing
 
