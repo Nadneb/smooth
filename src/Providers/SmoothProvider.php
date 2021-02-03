@@ -14,5 +14,9 @@ class SmoothProvider extends ServiceProvider
                 SmoothDBCommand::class,
             ]);
         }
+
+        $this->publishes([
+            __DIR__ . '/../../config/smooth.php' => config_path('smooth.php')
+        ]);
     }
 }

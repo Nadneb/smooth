@@ -34,9 +34,10 @@ class Field
     public function getFieldTypeByStdClass($obj)
     {
         if (strpos($obj->Type, 'int') !== false) {
-            return preg_replace('/\(.*?\)/', '', $obj->Type);
+            $obj->Type = preg_replace('/\(.*?\)/', '', $obj->Type);
+            return str_replace(' ', '', $obj->Type);
         }
-        return $obj->Type;
+        return str_replace(' ', '', $obj->Type);
     }
 
     public function setBySql($sql)
@@ -55,7 +56,8 @@ class Field
         if (empty($r)) {
             return '';
         }
-        return $r[1];
+        // 帖子评论：{content: \"xxx\", post_id: \"xxx\"}, 评论的回复：{content: \"xxx\",\"xxx\"}'
+        return str_replace('\"', '"', $r[1]);
     }
 
     public function getFieldDefaultBySql($sql)
@@ -78,8 +80,10 @@ class Field
     public function getFieldTypeBySql($sql)
     {
         $r = [];
-        preg_match('/`.*?`\s(.*?)\s(?=[a-zA-Z])/', $sql, $r);
+        // not null 或者 null 前面的作为类型
+        preg_match('/`.*?`\s(.*?)\s(?=not null|null)/', $sql, $r);
         $str = $r[1];
+        // int 类型指定长度无效，eg: int(20)
         if (strpos($str, 'int') !== false) {
             $str = preg_replace('/\(.*?\)/', '', $str);
         }

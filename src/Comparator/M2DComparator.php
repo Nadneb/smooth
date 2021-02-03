@@ -14,10 +14,52 @@ class M2DComparator
     const SOURCE_UPDATE = 1;
     const SOURCE_ADD    = 2;
 
+    private static function isIncludeField($key)
+    {
+        $includes = config('smooth.include');
+        foreach ($includes as $include) {
+            if (preg_match(sprintf('/%s/', $include), $key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function isExcludeField($key)
+    {
+        $excludes = config('smooth.exclude');
+        foreach ($excludes as $exclude) {
+            if (preg_match(sprintf('/%s/', $exclude), $key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static function isNeedCompare($key)
+    {
+        $mode = config('smooth.mode');
+
+        switch ($mode) {
+            case 'include':
+                return self::isIncludeField($key);
+            case 'exclude':
+                return !self::isExcludeField($key);
+            default:
+                throw new \Exception('smooth mode err');
+        }
+    }
+
     public static function compare($mFieldMap, $dFieldMap)
     {
         $arr = [];
         foreach ($mFieldMap as $key => $field) {
+
+            if (!static::isNeedCompare($key)) {
+                continue;
+            }
+
             if (!isset($dFieldMap[$key])) {
                 $arr[$key] = [
                     'source' => self::SOURCE_ADD,
@@ -62,7 +104,7 @@ class M2DComparator
         echo $renderer->getTable();
 
         $sql = $mReader->getColumnDescStr(new Blueprint(''), $mReader->columnDefineMap[$key]);
-        printf('SQL: ALTER TABLE `%s` ADD COLUMN %s%s', $tableName, $sql, PHP_EOL.PHP_EOL);
+        printf('SQL: ALTER TABLE `%s` ADD COLUMN %s%s', $tableName, $sql, PHP_EOL . PHP_EOL);
     }
 
     private static function printForUpdate(&$count, $key, MigrateFileReader $mReader, DBReader $dReader)
@@ -80,7 +122,7 @@ class M2DComparator
         echo $renderer->getTable();
 
         $sql = $mReader->getColumnDescStr(new Blueprint(''), $mReader->columnDefineMap[$key]);
-        printf('SQL: ALTER TABLE `%s` MODIFY COLUMN %s%s', $tableName, $sql, PHP_EOL.PHP_EOL);
+        printf('SQL: ALTER TABLE `%s` MODIFY COLUMN %s%s', $tableName, $sql, PHP_EOL . PHP_EOL);
     }
 
     public static function addArrayToTextTableItem(Field $field, $source)
